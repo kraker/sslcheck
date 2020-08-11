@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# HTTPS and SSL checker
+
+echo "DEBUG: Opts are $0 $1"
+
+
+# SSL script added from https://github.com/bobbyiliev/bash-ssl-checker-tool
+##
+# Script which let's you gather some basic information about your SSL certificate
+##
+
+##
+# Colors
+##
+green='\e[32m'
+blue='\e[34m'
+clear='\e[0m'
+orange='\e[33m'
+red='\e[31m'
+
+##
+# Color Functions
+##
+
+ColorGreen(){
+        echo -ne $green$1$clear
+}
+ColorBlue(){
+        echo -ne $blue$1$clear
+}
+ColorRed(){
+        echo -ne $red$1$clear
+}
+ColorOrange(){
+        echo -ne $orange$1$clear
+}
+
+##
+# Make sure that openssl is installed
+##
+if ! [ -x "$(command -v openssl)" ] ; then
+        echo "The openssl command is required! Please install it and then try again"
+        exit 1
+fi
+
+##
+# Check if there is an input
+##
+if [[ $1 ]]; then
+	host $1 > /dev/null
+	if [ $? -eq 0 ]; then
+		echo -ne "The $(ColorGreen $1 ) domain name seems valid
+
+"
+	else
+		echo -ne "Could not resolve the $(ColorGreen ${1}) domain name...
+
+"
+		exit 1
+	fi
+fi
+
+case $1 in
+# Usage example
+help)
+        echo -ne "Usage:
+$(ColorGreen './ssl domain.com')
+"
+        exit 1
+;;
+"")
+        echo -ne "Usage:
+$(ColorGreen './ssl domain.com')
+"
+        exit 1
+;;
+*)
+	today=$(date +%F)
+	expires=$(echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -dates | grep 'notAfter' | sed 's/notAfter=//')
+	#echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -dates
+
+	echo -ne "$(ColorRed '#') $(ColorGreen 'The SSL certificate has been issued for:')"
+	echo ''
+	echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -subject | sed 's/subject=/Domain: /'
+	#echo | openssl s_client -servername www.$1 -connect www.$1:443 2>/dev/null | openssl x509 -noout -subject
+	echo '----'
+
+	echo ''
+        echo -ne "$(ColorRed '#') $(ColorGreen 'The SSL certificate expires in:')"
+	echo ''
+	echo $(( ( $(date -ud "$expires" +'%s') - $(date -ud "$today" +'%s') )/60/60/24 )) days
+	echo '----'
+
+	echo ''
+        echo -ne "$(ColorRed '#') $(ColorGreen 'Dates:')"
+	echo ''
+	echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -dates | sed 's/notAfter=/Expires On: /' | sed 's/notBefore=/Issued On: /'
+	echo '----'
+
+	echo ''
+        echo -ne "$(ColorRed '#') $(ColorGreen 'The certificate has been issued by:')"
+	echo ''
+	echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -issuer | sed 's/issuer=/Issuer: /'
+	echo '----'
+
+	echo ''
+        echo -ne "$(ColorRed '#') $(ColorGreen 'TLS supported:')"
+	echo ''
+	nmap --script ssl-enum-ciphers -p 443 $1 | grep ':' | grep -i tls
+	echo '----'
+
+	echo ''
+        echo -ne "$(ColorRed '#') $(ColorGreen 'Fingerprint:')"
+	echo ''
+	echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -fingerprint
+	echo '----'
+
+	#echo ''
+        #echo -ne "$(ColorRed '#') $(ColorGreen 'Decode')"
+	#echo ''
+	#echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -text
+	#echo '#################'
+
+esac
+
+# Check for forcing of HTTPS
+echo ""
+echo "# Look for forcing of HTTPS"
+curl -v --head --user-agent "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)" $1
+
