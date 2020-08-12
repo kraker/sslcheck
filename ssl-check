@@ -178,7 +178,7 @@ case $1 in
         ssl_expires_in_days
         ssl_dates_issued_for $1
         ssl_issued_by $1
-        tls_version $1
+        #tls_version $1
         ssl_cert_fingerprint $1
         check_force_https $1
         ;;
