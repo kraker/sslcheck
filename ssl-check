@@ -144,16 +144,26 @@ tls_version () {
 	  echo ''
 	  nmap --script ssl-enum-ciphers -p 443 $1 | grep ':' | grep -i tls
 	  echo '----'
+    # TODO: re-write this so that it doesn't depend on 'nmap' since that is
+    # very slow on jumpstation.
 }
 
 check_force_https () {
     # Check if webserver is forcing https or not and display result
     echo '' 
-    echo -ne "$(ColorRed '#') $(ColorGreen 'Force HTTPS:')"
-    echo ''
-    curl -v --head --user-agent "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)" $1 2>$1 | grep https
-    # TODO: pick a better user agent for the curl command
-    # TODO: create test for grep command
+    echo -e "$(ColorRed '#') $(ColorGreen 'Force HTTPS:')"
+
+    # Initialize local variable with a value if redirecting to HTTPS
+    local https=$(curl -v --head --user-agent Mozilla/5.0 $1 2>$1 | grep https)
+
+    # Test if value is non-empty. If empty not forcing HTTPS.
+    if [[ -n $https ]]; then
+        echo -e "Webserver is forcing HTTPS" 
+    else
+        echo -e "Webserver is $(ColorRed 'not') forcing HTTPS"
+    fi
+
+    echo '----'
 }
 
 #### END FUNCTIONS #### 
@@ -175,12 +185,12 @@ case $1 in
     *)
         validate_input $1
         ssl_issued_for_host $1
+        check_force_https $1
         ssl_expires_in_days
         ssl_dates_issued_for $1
         ssl_issued_by $1
         #tls_version $1
         ssl_cert_fingerprint $1
-        check_force_https $1
         ;;
 esac
 
