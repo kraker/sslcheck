@@ -52,6 +52,7 @@ usage () {
 $(ColorGreen './ssl domain.com')
 "
     exit 1
+    # TODO: Flesh out this function.
 }
 
 # Validation
@@ -166,6 +167,38 @@ check_force_https () {
     echo '----'
 }
 
+# Mixed content
+
+check_mixed_content () {
+    # Check if website is serving mixed content and display results.
+    echo ''
+    echo -e "$(ColorRed '#') $(ColorGreen 'Mixed Content:')"
+
+    mkdir -p ~/tmp # Make tmp directory if not already there
+
+    # Get everything needed to mirror the main page and write the calls to
+    # each resource to a log file.
+    wget --page-requisites \
+         --delete-after \
+         --no-verbose \
+         -e robots=off \
+         -o ~/tmp/ssl_check_log \
+         $1 
+
+    # Check the log created above for non-https resource calls
+    local http=$(grep 'http:' ~/tmp/ssl_check_log)
+
+    # If http variable is non-empty then there is mixed content. Display the
+    # mixed content. If not, then no mixed content.
+    if [[ -n $http ]]; then
+        echo -e "Website has $(ColorRed 'Mixed Content')"
+        echo -e "$http"
+    else
+        echo -e "Website has no Mixed Content"
+    fi
+
+}
+
 #### END FUNCTIONS #### 
 
 
@@ -191,6 +224,7 @@ case $1 in
         ssl_issued_by $1
         #tls_version $1
         ssl_cert_fingerprint $1
+        check_mixed_content $1
         ;;
 esac
 
