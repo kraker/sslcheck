@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # HTTPS and SSL checker
-# SSL script adapted and refactored from:
+# Large portions of this script adapted and refactored from:
 # https://github.com/bobbyiliev/bash-ssl-checker-tool
 
 
@@ -28,6 +28,8 @@ expires=$(echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | o
 
 #### FUNCTIONS ########
 
+# TODO: Add the ability to check sub-pages/URLs not just domain names.
+
 # Color Functions
 
 ColorGreen(){
@@ -49,7 +51,7 @@ ColorOrange(){
 usage () {
     # Display usage information 
     echo -ne "Usage:
-$(ColorGreen './ssl domain.com')
+$(ColorGreen 'ssl-check domain.com')
 "
     exit 1
     # TODO: Flesh out this function.
@@ -155,7 +157,7 @@ check_force_https () {
     echo -e "$(ColorRed '#') $(ColorGreen 'Force HTTPS:')"
 
     # Initialize local variable with a value if redirecting to HTTPS
-    local https=$(curl -v --head --user-agent Mozilla/5.0 $1 2>$1 | grep https)
+    local https=$(curl -v --head --user-agent Mozilla/5.0 $1 2>&1 | grep https)
 
     # Test if value is non-empty. If empty not forcing HTTPS.
     if [[ -n $https ]]; then
@@ -176,27 +178,39 @@ check_mixed_content () {
 
     mkdir -p ~/tmp # Make tmp directory if not already there
 
-    # Get everything needed to mirror the main page and write the calls to
-    # each resource to a log file.
+    # Get everything needed to mirror/serve the main page locally and write 
+    # the calls to each resource to a log file.
     wget --page-requisites \
-         --delete-after \
          --no-verbose \
+         --delete-after \
          -e robots=off \
          -o ~/tmp/ssl_check_log \
          $1 
 
-    # Check the log created above for non-https resource calls
+    # Check the log created above for http/https resource calls and assign
+    # to local variables.
     local http=$(grep 'http:' ~/tmp/ssl_check_log)
+    local https=$(grep 'https:' ~/tmp/ssl_check_log)
 
     # If http variable is non-empty then there is mixed content. Display the
-    # mixed content. If not, then no mixed content.
-    if [[ -n $http ]]; then
+    # mixed content. If not using HTTPS say that, else no mixed content. 
+    if [[ -n $http && -n $https ]]; then
         echo -e "Website has $(ColorRed 'Mixed Content')"
         echo -e "$http"
+        echo ''
+        echo -e "* This is a rudimentary check for mixed content, javascript needs to be executed"
+        echo -e "(among other things) for a more complete diagnostic."
+    elif [[ -z $https ]]; then
+        echo -e "Website isn't using HTTPS"
     else
         echo -e "Website has no Mixed Content"
+        echo ''
+        echo -e "* This is a rudimentary check for mixed content, javascript needs to be executed"
+        echo -e "(among other things) for a more complete diagnostic."
     fi
 
+    # Clean-up logfiles
+    rm -f ~/tmp/ssl_check_log
 }
 
 #### END FUNCTIONS #### 
