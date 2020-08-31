@@ -87,6 +87,9 @@ validate_input () {
 
 # SSL information
 
+# TODO: Add intermediate certificate chain check. 
+# Example: https://www.sslshopper.com/ssl-checker.html#hostname=shakteeman.in 
+
 ssl_issued_for_host () {
     # Get hostname ssl certificate is issued for and display it
     echo -ne "$(ColorRed '#') $(ColorGreen 'The SSL certificate has been issued for:')"
@@ -180,17 +183,14 @@ check_mixed_content () {
 
     # Get everything needed to mirror/serve the main page locally and write 
     # the calls to each resource to a log file.
-    wget --page-requisites \
-         --no-verbose \
-         --delete-after \
-         -e robots=off \
-         -o ~/tmp/ssl_check_log \
-         $1 
-
+    wget -E -H -k -K --page-requisites --no-verbose --delete-after --user-agent="Mozilla/5.0" -e robots=off -o ~/tmp/ssl_check_log $1
+    
     # Check the log created above for http/https resource calls and assign
     # to local variables.
     local http=$(grep 'http:' ~/tmp/ssl_check_log)
     local https=$(grep 'https:' ~/tmp/ssl_check_log)
+
+    # TODO: parse .css and .js files for 'http' calls that could cause mixed content issues
 
     # If http variable is non-empty then there is mixed content. Display the
     # mixed content. If not using HTTPS say that, else no mixed content. 
@@ -210,7 +210,7 @@ check_mixed_content () {
     fi
 
     # Clean-up logfiles
-    rm -f ~/tmp/ssl_check_log
+    #rm -f ~/tmp/ssl_check_log
 }
 
 #### END FUNCTIONS #### 
