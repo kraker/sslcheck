@@ -17,10 +17,6 @@ _*Note: install for Linux based distros._
 wget -O ~/bin/ssl-check https://raw.githubusercontent.com/kraker/ssl-checker/master/ssl-check
 chmod +x ~/bin/ssl-check
 ```
-_You might need to source your `.bashrc` to load the script on your $PATH._
-```
-source ~/.bashrc
-```
 
 ## Usage ##
 ```
