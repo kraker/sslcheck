@@ -3,10 +3,11 @@
 Script to check the SSL status of a site in the CLI.
 
 Designed to give similar output to these web-based tools:
-https://www.sslshopper.com/ssl-checker.html
-https://www.whynopadlock.com/
+- https://www.sslshopper.com/ssl-checker.html
+- https://www.whynopadlock.com/
 
-_*Note: the mixed content checker is proving more difficult than anticipated and is still a work in progress.  To truely do this right, you probably need some kind of headless browser that not only parses and renders the HTML/CSS, but the JavaScript, and then gets whatever assets those things request. If even a single one of those assets comes from a non-HTTPS URL, then Mixed Content is broken. Right now this tool has a crude Mixed Content check that uses `wget` to mirror the page and then `grep` 's for instances of HTTP URLs. I may get around to fixing this sometime in the future, but a headless browser seems a bit heavy for a what was supposed to be a simple bash script._
+_Note: this script is a work in progress._
+
 
 ## Install ##
 
@@ -63,6 +64,11 @@ Website has no Mixed Content
 (among other things) for a more complete diagnostic.
 ```
 
+## TODO ##
+
+_Note: the mixed content checker is proving more difficult than anticipated and is still a work in progress.  To truely do this right, you probably need some kind of headless browser that not only parses and renders the HTML/CSS, but the JavaScript, and then gets whatever assets those things request. If even a single one of those assets comes from a non-HTTPS URL, then Mixed Content is broken. Right now this tool has a crude Mixed Content check that uses `wget` to mirror the page and then `grep` 's for instances of HTTP URLs. I may get around to fixing this sometime in the future, but a headless browser seems a bit heavy for a what was supposed to be a simple bash script._
+
+## Acknowledgements ##
 
 Large portions of this script adapted and refactored from:
 https://github.com/bobbyiliev/bash-ssl-checker-tool
