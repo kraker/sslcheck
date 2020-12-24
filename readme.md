@@ -29,7 +29,7 @@ ssl-check domain.com
 
 Example:
 ```
-[akraker@localhost ssl-checker]$ ./ssl-check kraker.dev
+[akraker@localhost]$ ssl-check kraker.dev
 The kraker.dev domain name seems valid
 
 # The SSL certificate has been issued for:
