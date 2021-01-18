@@ -200,8 +200,10 @@ check_mixed_content () {
         echo ''
         echo -e "* This is a rudimentary check for mixed content, javascript needs to be executed"
         echo -e "(among other things) for a more complete diagnostic."
+    elif [[ -z $https || -z $http ]]; then
+		echo -e "Failed to fetch a page."
     elif [[ -z $https ]]; then
-        echo -e "Website isn't using HTTPS"
+        echo -e "Website isn't using HTTPS."
     else
         echo -e "Website has no Mixed Content"
         echo ''
