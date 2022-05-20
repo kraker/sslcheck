@@ -4,9 +4,6 @@
 # Large portions of this script adapted and refactored from:
 # https://github.com/bobbyiliev/bash-ssl-checker-tool
 
-
-
-
 #### VARIABLES ########
 
 # Colors
@@ -22,9 +19,6 @@ expires=$(echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | o
 #echo | openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -dates
 
 #### END VARIABLES ####
-
-
-
 
 #### FUNCTIONS ########
 
@@ -45,9 +39,7 @@ ColorOrange(){
     echo -ne $orange$1$clear
 }
 
-
 # Usage
-
 usage () {
     # Display usage information 
     echo -ne "Usage:
@@ -58,7 +50,6 @@ $(ColorGreen 'ssl-check domain.com')
 }
 
 # Validation
-
 check_openssl () {
     # Check for openssl command 
     if ! [ -x "$(command -v openssl)" ] ; then
@@ -86,10 +77,8 @@ validate_input () {
 
 
 # SSL information
-
 # TODO: Add intermediate certificate chain check. 
 # Example: https://www.sslshopper.com/ssl-checker.html#hostname=shakteeman.in 
-
 ssl_issued_for_host () {
     # Get hostname ssl certificate is issued for and display it
     echo -ne "$(ColorRed '#') $(ColorGreen 'The SSL certificate has been issued for:')"
@@ -142,7 +131,6 @@ ssl_cert_fingerprint () {
 }
 
 # Server configuration
-
 tls_version () {
     # Negotiate highest TLS version supported and display it
 	  echo ''
@@ -173,7 +161,6 @@ check_force_https () {
 }
 
 # Mixed content
-
 check_mixed_content () {
     # Check if website is serving mixed content and display results.
     echo ''
@@ -217,9 +204,6 @@ check_mixed_content () {
 
 #### END FUNCTIONS #### 
 
-
-
-
 #### MAIN #############
 
 # Make sure that openssl is installed
@@ -246,4 +230,4 @@ esac
 
 #### END MAIN #########
 
-exit
+exit 0
