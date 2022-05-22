@@ -20,12 +20,12 @@ chmod +x ~/bin/ssl-check
 
 ## Usage ##
 ```
-ssl-check domain.com
+sslcheck domain.com
 ```
 
 Example:
 ```
-[akraker@localhost]$ ssl-check kraker.dev
+[akraker@localhost]$ sslcheck kraker.dev
 The kraker.dev domain name seems valid
 
 # The SSL certificate has been issued for:
