@@ -43,7 +43,7 @@ ColorOrange(){
 usage () {
     # Display usage information 
     echo -ne "Usage:
-$(ColorGreen 'ssl-check domain.com')
+$(ColorGreen 'sslcheck domain.com')
 "
     exit 1
     # TODO: Flesh out this function.
