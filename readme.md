@@ -14,8 +14,8 @@ _Note: this script is a work in progress._
 _*Note: install for Linux based distros._
 
 ```
-wget -O ~/bin/ssl-check https://raw.githubusercontent.com/kraker/ssl-checker/master/ssl-check
-chmod +x ~/bin/ssl-check
+wget -O ~/bin/ssl-check https://raw.githubusercontent.com/kraker/ssl-checker/master/sslcheck
+chmod +x ~/bin/sslcheck
 ```
 
 ## Usage ##
